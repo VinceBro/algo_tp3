@@ -113,82 +113,91 @@ unsigned int Graphe::getPoids(size_t i, size_t j) const
 //! \param[out] le chemin est retourné (un seul noeud si p_destination == p_origine ou si p_destination est inatteignable)
 //! \return la longueur du chemin (= numeric_limits<unsigned int>::max() si p_destination n'est pas atteignable)
 //! \throws logic_error lorsque p_origine ou p_destination n'existe pas
-unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std::vector<size_t> &p_chemin) const
-{
+unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std::vector<size_t> &p_chemin) const {
+
+    /// code du chum en ligne
+    if (p_origine >= m_listesAdj.size() || p_destination >= m_listesAdj.size())
+        throw logic_error("Graphe::dijkstra(): p_origine ou p_destination n'existe pas");
 
     p_chemin.clear();
 
-    vector<unsigned int> distance(m_listesAdj.size(), numeric_limits<unsigned int>::max());
-    vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
-    vector<bool> solutionne(m_listesAdj.size(), false);
+    typedef pair<size_t, size_t> leNoeud;
 
-    distance[p_origine] = 0;
-
-    set<size_t> q; //ensemble des noeuds non solutionnés en bordure des noeuds solutionnés;
-    q.insert(p_origine);
-
-    //Boucle principale: touver distance[] et predecesseur[]
-    while (!q.empty())
+    //Si l'origine et la destination sont les mêmes points
+    if (p_origine == p_destination)
     {
-        //trouver le noeud dans q tel que distance[noeud] est minimal
-        unsigned int min = numeric_limits<unsigned int>::max();
-        auto noeud_solution = numeric_limits<size_t>::max();
-        for(const auto & noeud : q)
-        {
-            if(distance[noeud] < min)
-            {
-                min = distance[noeud];
-                noeud_solution = noeud;
-            }
-        }
-        if (min == numeric_limits<unsigned int>::max()) break; //quitter la boucle : il est impossible de se rendre à destination
-
-        q.erase(noeud_solution); //enlever le noeud solutionné de q
-        solutionne[noeud_solution] = true; //indique qu'il est solutionné
-
-        if (noeud_solution == p_destination) break; //car on a obtenu distance[p_destination] et predecesseur[p_destination]
-
-        //relâcher les arcs sortant de noeud_solution (le noeud solutionné)
-        for (const auto & arc : m_listesAdj[noeud_solution])
-        {
-            if (q.find(arc.destination) == q.end() && !solutionne[arc.destination])
-                q.insert(arc.destination); //insertion dans les noeuds à traiter
-
-            unsigned int temp = distance[noeud_solution] + arc.poids;
-            if (temp < distance[arc.destination])
-            {
-                distance[arc.destination] = temp;
-                predecesseur[arc.destination] = noeud_solution;
-            }
-        }
-
+        p_chemin.push_back(p_destination);
+        return 0;
     }
 
-    //cas où l'on n'a pas de solution
+    priority_queue< leNoeud, vector <leNoeud> , greater<leNoeud> > q;
+
+    //Conteneurs
+    vector<unsigned int> distance(m_listesAdj.size(), numeric_limits<unsigned int>::max());
+    vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
+    vector<bool> visite(m_listesAdj.size(), false);
+
+    //On ajoute le noeud de départ
+    distance[p_origine] = 0;
+    q.push(make_pair(0, p_origine));
+
+    //Boucle principale: trouver distance[] et predecesseur[]
+    while (!q.empty())
+    {
+        //On prend le noeud le plus proche et on l'enlève de la file
+        size_t noeudLePlusProche = q.top().second;
+        q.pop();
+
+        //On marque le noeud visité
+        visite[noeudLePlusProche] = true;
+
+        if (noeudLePlusProche == p_destination) break; // on a terminé, car on a obtenu distance[p_destination] et predecesseur[p_destination]
+
+        // On effectue le relachement des arcs et on identifie le voisin le plus près
+        for (auto voisin = m_listesAdj[noeudLePlusProche].begin(); voisin != m_listesAdj[noeudLePlusProche].end(); ++voisin)
+        {
+            if (!visite[voisin->destination]) {
+                unsigned int nouvelleDistance = distance[noeudLePlusProche] + voisin->poids;
+
+                //On regarde si la distance est plus courte en passant par le sommet noeudLePlusProche
+                int v = voisin->destination;
+                // si tel est le cas, on affecte le nouveau prédecesseur
+                if (nouvelleDistance < distance[voisin->destination]) {
+                    distance[voisin->destination] = nouvelleDistance;
+                    q.push(make_pair(distance[v], v));
+                    predecesseur[voisin->destination] = noeudLePlusProche;
+                }
+            }
+        }
+    }
+
+    //cas où on n'a pas de solution
     if (predecesseur[p_destination] == numeric_limits<unsigned int>::max())
     {
         p_chemin.push_back(p_destination);
         return numeric_limits<unsigned int>::max();
     }
 
-//    On a une solution, donc construire le plus court chemin à l'aide de predecesseur[]
-    stack<size_t> pileDuChemin;
+    //On a une solution, donc construire le plus court chemin à l'aide de predecesseur[]
+    stack<size_t> laPileDuCheminDeRetour;
     size_t numero = p_destination;
-    pileDuChemin.push(numero);
+    laPileDuCheminDeRetour.push(numero);
+
     while (predecesseur[numero] != numeric_limits<size_t>::max())
     {
         numero = predecesseur[numero];
-        pileDuChemin.push(numero);
+        laPileDuCheminDeRetour.push(numero);
     }
-    while (!pileDuChemin.empty())
+
+    while (!laPileDuCheminDeRetour.empty())
     {
-        size_t temp = pileDuChemin.top();
+        size_t temp = laPileDuCheminDeRetour.top();
         p_chemin.push_back(temp);
-        pileDuChemin.pop();
+        laPileDuCheminDeRetour.pop();
     }
+
     return distance[p_destination];
 }
-
 
 
 //    p_chemin.clear();
