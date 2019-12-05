@@ -114,6 +114,15 @@ unsigned int Graphe::getPoids(size_t i, size_t j) const
 //! \return la longueur du chemin (= numeric_limits<unsigned int>::max() si p_destination n'est pas atteignable)
 //! \throws logic_error lorsque p_origine ou p_destination n'existe pas
 unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std::vector<size_t> &p_chemin) const{
+    if (p_origine >= m_listesAdj.size() || p_destination >= m_listesAdj.size())
+        throw logic_error("Graphe::dijkstra(): p_origine ou p_destination n'existe pas");
+
+    if (p_origine == p_destination)
+    {
+        p_chemin.push_back(p_destination);
+        return 0;
+    }
+
     size_t V = m_listesAdj.size();
     const size_t INF = numeric_limits<size_t>::max();
     stack<size_t> Stack;
@@ -143,6 +152,7 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
     {
         // Get the next vertex from topological order
         size_t u = Stack.top();
+        if(u == p_destination)break;
         Stack.pop();
 
         // Update distances of all adjacent vertices
@@ -164,7 +174,11 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
         if (cunter > 150000) throw exception();
     }
 
-    cout << predecesseur[p_origine] << endl;
+    if (predecesseur[p_destination] == numeric_limits<unsigned int>::max())
+    {
+        p_chemin.push_back(p_destination);
+        return numeric_limits<unsigned int>::max();
+    }
     stack<size_t> pileDuChemin;
     int numero = p_destination;
     pileDuChemin.push(numero);
