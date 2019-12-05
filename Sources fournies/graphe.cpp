@@ -131,8 +131,7 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
 
     priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
     vector<size_t > dist(m_listesAdj.size(), numeric_limits<size_t>::max());
-//    vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
-    stack<size_t> pileDuChemin;
+    vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
 
 
 
@@ -169,24 +168,19 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
                 // Updating distance of v
                 dist[v] = dist[u] + weight;
                 pq.push(make_pair(dist[v], v));
-//                predecesseur[v] = u;
-                pileDuChemin.push(u);
+                predecesseur[v] = u;
             }
         }
     }
+    stack<size_t> pileDuChemin;
     size_t numero = p_destination;
     pileDuChemin.push(numero);
 
-//    for (auto lol: predecesseur){
-//
-//        if (lol == numeric_limits<size_t>::max()) cunter++;
-//    }
-//    cout << cunter << endl;
-//    while (predecesseur[numero] != numeric_limits<size_t>::max())
-//    {
-//        numero = predecesseur[numero];
-//        pileDuChemin.push(numero);
-//    }
+    while (predecesseur[numero] != numeric_limits<size_t>::max())
+    {
+        numero = predecesseur[numero];
+        pileDuChemin.push(numero);
+    }
     while (!pileDuChemin.empty())
     {
         size_t temp = pileDuChemin.top();

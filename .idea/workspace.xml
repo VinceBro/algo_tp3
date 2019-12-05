@@ -12,7 +12,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f4b3ffbd-41fb-4eca-bde5-782d5aeee1f7" name="Default Changelist" comment="" />
+    <list default="true" id="f4b3ffbd-41fb-4eca-bde5-782d5aeee1f7" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sources fournies/graphe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sources fournies/graphe.cpp" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,9 +29,14 @@
   <component name="FavoritesManager">
     <favorites_list name="TP3" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectId" id="1ULJdaVBoNanGYaguC5N9DRjFXi" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -78,12 +86,23 @@
       <updated>1575130029809</updated>
       <workItem from="1575130031508" duration="9531000" />
       <workItem from="1575571555157" duration="547000" />
-      <workItem from="1575572399513" duration="1202000" />
+      <workItem from="1575572399513" duration="2305000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
