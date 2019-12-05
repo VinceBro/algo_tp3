@@ -13,8 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f4b3ffbd-41fb-4eca-bde5-782d5aeee1f7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sources fournies/graphe.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sources fournies/graphe.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sources fournies/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Sources fournies/main.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
