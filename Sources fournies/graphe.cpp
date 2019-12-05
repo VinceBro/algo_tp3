@@ -113,73 +113,68 @@ unsigned int Graphe::getPoids(size_t i, size_t j) const
 //! \param[out] le chemin est retourné (un seul noeud si p_destination == p_origine ou si p_destination est inatteignable)
 //! \return la longueur du chemin (= numeric_limits<unsigned int>::max() si p_destination n'est pas atteignable)
 //! \throws logic_error lorsque p_origine ou p_destination n'existe pas
-unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std::vector<size_t> &p_chemin) const
-{
-    typedef pair<int, int> iPair;
+unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std::vector<size_t> &p_chemin) const{
+    size_t V = m_listesAdj.size();
+    const size_t INF = numeric_limits<size_t>::max();
+    stack<size_t> Stack;
+    size_t dist[V];
 
+    // Mark all the vertices as not visited
+    bool *visited = new bool[V];
+    for (size_t i = 0; i < V; i++)
+        visited[i] = false;
 
-    p_chemin.clear();
-    // algo de base
-    if (p_origine >= m_listesAdj.size() || p_destination >= m_listesAdj.size())
-        throw logic_error("Graphe::dijkstraP(): p_origine ou p_destination n'existe pas");
+    // Call the recursive helper function to store Topological Sort
+    // starting from all vertices one by one
+    for (size_t i = 0; i < V; i++)
+        if (visited[i] == false)
+            topologicalSortUtil(i, visited, Stack);
 
-    if (p_origine == p_destination)
-    {
-        p_chemin.push_back(p_destination);
-        return 0;
-    }
-
-    priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
-    vector<size_t > dist(m_listesAdj.size(), numeric_limits<size_t>::max());
-    vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
-
-
-
-    // Insert source itself in priority queue and initialize
-    // its distance as 0.
-    pq.push(make_pair(0, p_origine));
+    // Initialize distances to all vertices as infinite and distance
+    // to source as 0
+    for (size_t i = 0; i < V; i++)
+        dist[i] = INF;
     dist[p_origine] = 0;
 
-    /* Looping till priority queue becomes empty (or all
-      distances are not finalized) */
-    while (!pq.empty())
+    vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
+    int cunter = 0;
+    // Process vertices in topological order
+    while (Stack.empty() == false)
     {
-        // The first vertex in pair is the minimum distance
-        // vertex, extract it from priority queue.
-        // vertex label is stored in second of pair (it
-        // has to be done this way to keep the vertices
-        // sorted distance (distance must be first item
-        // in pair)
-        int u = pq.top().second;
-        pq.pop();
+        // Get the next vertex from topological order
+        size_t u = Stack.top();
+        Stack.pop();
 
-        // 'i' is used to get all adjacent vertices of a vertex
+        // Update distances of all adjacent vertices
         list<Arc>::const_iterator i;
-        for (i =m_listesAdj[u].begin(); i !=m_listesAdj[u].end(); ++i)
+        if (dist[u] != INF)
         {
-            // Get vertex label and weight of current adjacent
-            // of u.
-            int v = (*i).destination;
-            int weight = (*i).poids;
+            for (i = m_listesAdj[u].begin(); i != m_listesAdj[u].end(); ++i) {
+                if (dist[i->destination] > dist[u] + i->poids) {
+                    dist[i->destination] = dist[u] + i->poids;
+                    predecesseur[i->destination] = u;
+                }
 
-            //  If there is shorted path to v through u.
-            if (dist[v] > dist[u] + weight)
-            {
-                // Updating distance of v
-                dist[v] = dist[u] + weight;
-                pq.push(make_pair(dist[v], v));
-                predecesseur[v] = u;
+
             }
         }
-    }
-    stack<size_t> pileDuChemin;
-    size_t numero = p_destination;
-    pileDuChemin.push(numero);
 
+
+        cunter++;
+        if (cunter > 150000) throw exception();
+    }
+
+    cout << predecesseur[p_origine] << endl;
+    stack<size_t> pileDuChemin;
+    int numero = p_destination;
+    pileDuChemin.push(numero);
+    cunter =0 ;
     while (predecesseur[numero] != numeric_limits<size_t>::max())
     {
         numero = predecesseur[numero];
         pileDuChemin.push(numero);
+        cunter ++;
+        if (cunter > 150000) throw exception();
     }
     while (!pileDuChemin.empty())
     {
@@ -189,7 +184,26 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
     }
     cout << dist[p_destination] << endl;
     return dist[p_destination];
+    // Print the calculated shortest distances
+    for (int i = 0; i < V; i++)
+        (dist[i] == INF)? cout << "INF ": cout << dist[i] << " ";
+}
+void Graphe::topologicalSortUtil(size_t v, bool visited[], std::stack<size_t> &Stack) const
+{
+    // Mark the current node as visited
+    visited[v] = true;
 
+    // Recur for all the vertices adjacent to this vertex
+    std::list<Arc>::const_iterator i;
+    for (i =m_listesAdj[v].begin(); i !=m_listesAdj[v].end(); ++i)
+    {
+        Arc node = *i;
+        if (!visited[node.destination])
+            topologicalSortUtil(node.destination, visited, Stack);
+    }
+
+    // Push current vertex to stack which stores topological sort
+    Stack.push(v);
 }
 
 

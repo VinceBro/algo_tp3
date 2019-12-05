@@ -29,6 +29,7 @@ public:
 	unsigned int getPoids(size_t i, size_t j) const;
 	size_t getNbSommets() const;
     size_t getNbArcs() const;
+    void topologicalSortUtil(size_t v, bool visited[], std::stack<size_t> &Stack) const;
 
     unsigned int plusCourtChemin(size_t p_origine, size_t p_destination,
                              std::vector<size_t> & p_chemin) const;
