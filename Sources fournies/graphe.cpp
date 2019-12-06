@@ -132,6 +132,7 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
     priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
     vector<size_t > dist(m_listesAdj.size(), numeric_limits<size_t>::max());
     vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
+    vector<bool> visite(m_listesAdj.size(), false);
 
 
 
@@ -154,6 +155,8 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
         pq.pop();
 
         // 'i' is used to get all adjacent vertices of a vertex
+        if (u==p_destination) break;
+        visite[u] = true;
         list<Arc>::const_iterator i;
         for (i =m_listesAdj[u].begin(); i !=m_listesAdj[u].end(); ++i)
         {
@@ -163,7 +166,7 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
             int weight = (*i).poids;
 
             //  If there is shorted path to v through u.
-            if (dist[v] > dist[u] + weight)
+            if (!visite[v] && dist[v] > dist[u] + weight)
             {
                 // Updating distance of v
                 dist[v] = dist[u] + weight;
@@ -176,6 +179,10 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
     size_t numero = p_destination;
     pileDuChemin.push(numero);
 
+    if (predecesseur[p_destination] == numeric_limits<size_t>::max()){
+        p_chemin.push_back(p_destination);
+        return numeric_limits<size_t>::max();
+    }
     while (predecesseur[numero] != numeric_limits<size_t>::max())
     {
         numero = predecesseur[numero];
