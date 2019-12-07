@@ -115,7 +115,7 @@ unsigned int Graphe::getPoids(size_t i, size_t j) const
 //! \throws logic_error lorsque p_origine ou p_destination n'existe pas
 unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std::vector<size_t> &p_chemin) const
 {
-    typedef pair<int, int> iPair;
+    typedef pair<size_t, size_t> uIPaire;
 
 
     p_chemin.clear();
@@ -129,60 +129,57 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
         return 0;
     }
 
-    priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
+    // On initialise les différents conteneurs nécessaires à l'algorithme
+    priority_queue< uIPaire, vector <uIPaire> , greater<uIPaire> > pq;
     vector<size_t > dist(m_listesAdj.size(), numeric_limits<size_t>::max());
     vector<size_t> predecesseur(m_listesAdj.size(), numeric_limits<size_t>::max());
     vector<bool> visite(m_listesAdj.size(), false);
 
 
-
-    // Insert source itself in priority queue and initialize
-    // its distance as 0.
+    // On initialise le noeud d'origine à une distance de 0
+    // On utilise un conteneur de paire où le premier est la distance et le deuxième est l'index du noeud courant
     pq.push(make_pair(0, p_origine));
     dist[p_origine] = 0;
 
-    /* Looping till priority queue becomes empty (or all
-      distances are not finalized) */
     while (!pq.empty())
     {
-        // The first vertex in pair is the minimum distance
-        // vertex, extract it from priority queue.
-        // vertex label is stored in second of pair (it
-        // has to be done this way to keep the vertices
-        // sorted distance (distance must be first item
-        // in pair)
+        // u représente l'index du noeud courant
         int u = pq.top().second;
         pq.pop();
 
-        // 'i' is used to get all adjacent vertices of a vertex
+        // On a toute l'information qu'on a de besoin si on rentre dans le if
         if (u==p_destination) break;
+
         visite[u] = true;
         list<Arc>::const_iterator i;
         for (i =m_listesAdj[u].begin(); i !=m_listesAdj[u].end(); ++i)
         {
-            // Get vertex label and weight of current adjacent
-            // of u.
+            // représente l'index du noeud voisin
             int v = (*i).destination;
-            int weight = (*i).poids;
+            int poids = (*i).poids;
 
-            //  If there is shorted path to v through u.
-            if (!visite[v] && dist[v] > dist[u] + weight)
+            // relachement
+            if (!visite[v] && dist[v] > dist[u] +poids)
             {
-                // Updating distance of v
-                dist[v] = dist[u] + weight;
+                // On ajuste la distance de v
+                dist[v] = dist[u] +poids;
                 pq.push(make_pair(dist[v], v));
                 predecesseur[v] = u;
             }
         }
     }
-    stack<size_t> pileDuChemin;
-    size_t numero = p_destination;
-    pileDuChemin.push(numero);
 
     if (predecesseur[p_destination] == numeric_limits<size_t>::max()){
         p_chemin.push_back(p_destination);
         return numeric_limits<size_t>::max();
     }
+
+
+    // Reconstruction du chemin avec deux boucles while
+    stack<size_t> pileDuChemin;
+    size_t numero = p_destination;
+    pileDuChemin.push(numero);
+
     while (predecesseur[numero] != numeric_limits<size_t>::max())
     {
         numero = predecesseur[numero];
@@ -194,12 +191,13 @@ unsigned int Graphe::plusCourtChemin(size_t p_origine, size_t p_destination, std
         p_chemin.push_back(temp);
         pileDuChemin.pop();
     }
-    cout << dist[p_destination] << endl;
     return dist[p_destination];
 
 }
 
 
+
+// Algo original
 //    p_chemin.clear();
 //
 //    vector<unsigned int> distance(m_listesAdj.size(), numeric_limits<unsigned int>::max());

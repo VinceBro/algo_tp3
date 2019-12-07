@@ -66,7 +66,7 @@ int main()
     }
 
     bool afficherItineraire = true;
-    const unsigned int nbDeTests =100000; //nombre de tests à effectuer
+    const unsigned int nbDeTests =10000; //nombre de tests à effectuer
     long moy_tempsExecution = 0;
 
     unsigned int nbDeTestsComptabilises = 0;
